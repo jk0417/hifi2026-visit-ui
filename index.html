@@ -57,6 +57,11 @@ main{padding:0 12px 60px}
 .grid{display:flex;gap:5px;flex-wrap:wrap}
 .mb{font-size:11px;padding:5px 8px;border-radius:7px;background:var(--card2);border:1px solid var(--line);cursor:pointer}
 .mb .mbs{font-weight:800;margin-left:4px;color:var(--acc)}
+.mb.m100{border-color:var(--acc)}
+.mb.m30{background:#3a3318;border-color:var(--yel);color:#ffe0a0;font-weight:700}
+.mb.m30 .mbs{color:#ffd27a}
+.maplegend{font-size:11px;color:var(--mut);margin:2px 2px 10px;display:flex;gap:12px;flex-wrap:wrap}
+.maplegend b{font-weight:700}
 .hide{display:none}
 a{color:var(--acc)}
 </style></head><body>
@@ -159,9 +164,11 @@ function card(b){
 function drawMap(){
   const halls={};D.booths.forEach(b=>{(halls[b.hall]=halls[b.hall]||[]).push(b);});
   const order=Object.keys(halls).sort();
-  document.getElementById('map').innerHTML=order.map(h=>{
+  const legend=`<div class="maplegend"><span><b style="color:#ffe0a0">⭐ 노랑</b>=우선30(rank≤30)</span><span><b style="color:#5b8cff">파랑테</b>=TOP100</span><span>회색=여력 시</span></div>`;
+  document.getElementById('map').innerHTML=legend+order.map(h=>{
     const bs=halls[h].slice().sort((a,b)=>{const x=boothKey(a),y=boothKey(b);return x[0]-y[0]||x[1].localeCompare(y[1])||x[2]-y[2];});
-    const cells=bs.map(b=>`<span class="mb" onclick="jump('${b.booth}')">${b.booth}<span class="mbs">#${b.rank}</span></span>`).join('');
+    const cells=bs.map(b=>{const cls=b.rank<=30?'m30':(b.top100?'m100':'');
+      return `<span class="mb ${cls}" onclick="jump('${b.booth}')">${b.rank<=30?'⭐':''}${b.booth}<span class="mbs">#${b.rank}</span></span>`;}).join('');
     return `<div class="hall"><div class="htitle">홀 ${h} — ${bs.length}부스</div><div class="grid">${cells}</div></div>`;
   }).join('');}
 function jump(bn){
